@@ -1,0 +1,70 @@
+---
+
+- hosts: 'webservers'
+  remote_user: 'armen'
+  tasks:
+    - name: 'Install the required packages'
+      apt:
+        name:
+          - 'php-fpm'
+          - 'php-mysql'  
+          - 'mysql-server'
+          - 'nginx'
+          - 'unzip'     
+        state: 'present'
+        update_cache: true
+      become: true
+    - name: 'Download and extract Wordpress files'
+      unarchive:
+        src: 'https://wordpress.org/latest.tar.gz'
+        remote_src: true
+        dest: '/var/www/wordpress/'
+        owner: 'www-data'
+        group: 'www-data'
+      become: true
+    - name: 'Install python requiermentsfor mysql modules'
+      pip:
+        name: 'PyMySQL'
+        state: 'present'  
+      become: true
+    - name: 'Set mysql root user password'
+      mysql_user:
+        name: 'wordpress_user'
+        password: 'my_password'
+        login_unix_socket: '/var/run/mysqld/mysqld.sock'
+        check_implicit_admin: true
+        login_user: 'wordpress_user'
+        login_password: 'my_password'
+      become: true
+    - name: 'Create wordpress DB'
+      mysql_db:
+        name: 'wordpress_db'
+        state: 'present'
+        login_user: 'wordpress_user'
+        login_password: 'my_password'
+    - name: 'Create mysql wordpress DB user'
+      mysql_user:
+        name: 'wp_user'
+        password: 'wp_pwd'
+        update_password: 'on_create'
+        priv: '*.*:ALL'    
+        login_user: 'wordpress_user'
+        login_password: 'my_password'
+    - name: 'Upload wp-config.php file'
+      copy:     
+        src: '/home/armen/epam-ansible/files/wp-config.php'
+        dest: '/var/www/html/wordpress/wp-config.php'
+        owner: 'www-data'
+        group: 'www-data'
+      become: true
+    - name: 'Upload nginx config'
+      copy:
+        src: '/home/armen/epam-ansible/files/nginx.conf'
+        dest: '/etc/nginx/sites-enabled/wordpress'
+      become: true
+    - name: 'Restart Nginx service'
+      service:
+        name: 'nginx'
+        state: 'restarted'
+      become: true
+              
