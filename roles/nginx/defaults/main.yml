@@ -1,0 +1,10 @@
+---
+# defaults file for nginx
+
+nginx_package_name: 'nginx'
+nginx_service_name: 'nginx'
+nginx_listen_port: 80
+nginx_server_admin: 'wordpress_user@localhost'
+nginx_document_root: '/var/www/html'
+nginx_error_log_path: '${NGINX_LOG_DIR}/error.log'
+nginx_access_log_path: '${NGINX_LOG_DIR}/access.log combined'

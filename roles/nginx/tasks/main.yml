@@ -1,0 +1,19 @@
+---
+# tasks file for nginx
+
+
+- name: 'Install nginx'
+  apt:
+    name: 'nginx'
+    state: 'present'
+    update_cache: true
+  become: true
+  when: 'ansible_os_family == "Debian"'
+
+- name: 'Deploy nginx default config'
+  template:
+    src: 'default.conf'
+    dest: '/etc/nginx/sites-available/wordpress'
+  become: true
+  notify: 
+    - 'Restart nginx service'

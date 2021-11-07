@@ -1,0 +1,9 @@
+
+
+<VirtualHost *: {{ nginx_listen_port }}>
+  ServerAdmin {{ nginx_server_admin }}
+  DocumentRoot {{ nginx_document_root }}
+  ErrorLog {{ nginx_error_log_path}}
+  CustomLog {{ nginx_access_log_path }}
+</VirtualHost>
+
